@@ -60,7 +60,7 @@ class Breakthrough(): #class that organises and initialises the game
         self.__Deck.Shuffle() #shuffle deck
         self.__CurrentLock = self.__GetRandomLock() #get a new lock
 
-    def __CheckIfPlayerHasLost(self):
+    def __CheckIfPlayerHasLost(self): #returns True if no cards remain
         if self.__Deck.GetNumberOfCards() == 0:
             print("You have run out of cards in your deck.  Your final score is:", self.__Score)
             return True
@@ -130,7 +130,7 @@ class Breakthrough(): #class that organises and initialises the game
             if SplitLine[Count] == "Y":
                 self.__CurrentLock.SetChallengeMet(Count, True)
     
-    def __LoadGame(self, FileName):
+    def __LoadGame(self, FileName): #sets up game according to file contents
         try:
             with open(FileName) as f:          
                 LineFromFile = f.readline().rstrip()
@@ -239,13 +239,13 @@ class Breakthrough(): #class that organises and initialises the game
     def __MoveCard(self, FromCollection, ToCollection, CardNumber): #moves card between collections
         Score  = 0
         if FromCollection.GetName() == "HAND" and ToCollection.GetName() == "SEQUENCE": #check locations
-            CardToMove = FromCollection.RemoveCard(CardNumber) #remove card from one
+            CardToMove = FromCollection.RemoveCard(CardNumber) #remove card from one (by number), return removed card
             if CardToMove is not None:
                 ToCollection.AddCard(CardToMove) #add card to another
                 Score = CardToMove.GetScore() #get new score
         else:
-            CardToMove = FromCollection.RemoveCard(CardNumber)
-            if CardToMove is not None: #remove card from one, add to another
+            CardToMove = FromCollection.RemoveCard(CardNumber) #remove card from one, add to another
+            if CardToMove is not None:
                 ToCollection.AddCard(CardToMove)
         return Score
 
@@ -412,32 +412,32 @@ class CardCollection():
     def GetNumberOfCards(self): 
         return len(self._Cards)
 
-    def Shuffle(self):
-        for Count in range(10000):
+    def Shuffle(self): #randomly exchanges cards in list
+        for Count in range(10000): 
             RNo1 = random.randint(0, len(self._Cards) - 1)
             RNo2 = random.randint(0, len(self._Cards) - 1)
             TempCard = self._Cards[RNo1]
             self._Cards[RNo1] = self._Cards[RNo2]
             self._Cards[RNo2] = TempCard
 
-    def RemoveCard(self, CardNumber):
+    def RemoveCard(self, CardNumber): #removes card from cards, returns the card
         CardFound  = False
         Pos  = 0
         while Pos < len(self._Cards) and not CardFound:
-            if self._Cards[Pos].GetCardNumber() == CardNumber:
+            if self._Cards[Pos].GetCardNumber() == CardNumber: #checks if numbers match
                 CardToGet = self._Cards[Pos]
                 CardFound = True
                 self._Cards.pop(Pos)
             Pos += 1
         return CardToGet
 
-    def __CreateLineOfDashes(self, Size):
+    def __CreateLineOfDashes(self, Size): #creates dashes depending on size
         LineOfDashes = ""
         for Count in range(Size):
             LineOfDashes += "------"
         return LineOfDashes
     
-    def GetCardDisplay(self):
+    def GetCardDisplay(self): #creates display structure for the cards
         CardDisplay = "\n" + self._Name + ":"
         if len(self._Cards) == 0:
             return CardDisplay + " empty" + "\n" + "\n"
