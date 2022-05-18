@@ -73,18 +73,18 @@ class Breakthrough(): #class that organises and initialises the game
             if not self.__LoadGame("game1.txt"): #only loads 1 game? checks if game loads correctly
                 self.__GameOver = True
         else:
-            self.__CreateStandardDeck()
+            self.__CreateStandardDeck() #create + shuffle deck
             self.__Deck.Shuffle()
             for Count in range(5):
-                self.__MoveCard(self.__Deck, self.__Hand, self.__Deck.GetCardNumberAt(0))
-            self.__AddDifficultyCardsToDeck()
-            self.__Deck.Shuffle()
+                self.__MoveCard(self.__Deck, self.__Hand, self.__Deck.GetCardNumberAt(0))#move 5 deck cards to hand
+            self.__AddDifficultyCardsToDeck() 
+            self.__Deck.Shuffle() #add difficulty cards and reshuffle
             self.__CurrentLock = self.__GetRandomLock()
     
     def __PlayCardToSequence(self, CardChoice):
         if self.__Sequence.GetNumberOfCards() > 0:
             if self.__Hand.GetCardDescriptionAt(CardChoice - 1)[0] != self.__Sequence.GetCardDescriptionAt(self.__Sequence.GetNumberOfCards() - 1)[0]:
-                self.__Score += self.__MoveCard(self.__Hand, self.__Sequence, self.__Hand.GetCardNumberAt(CardChoice - 1))
+                self.__Score += self.__MoveCard(self.__Hand, self.__Sequence, self.__Hand.GetCardNumberAt(CardChoice - 1)) #move card and add card score to Score
                 self.__GetCardFromDeck(CardChoice)
         else:
             self.__Score += self.__MoveCard(self.__Hand, self.__Sequence, self.__Hand.GetCardNumberAt(CardChoice - 1))
