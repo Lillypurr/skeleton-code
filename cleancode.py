@@ -6,49 +6,49 @@
 import random
 import os
 
-def Main():
+def Main(): #begins the game, instantiates Breakthrough object
     ThisGame = Breakthrough()
     ThisGame.PlayGame()
 
-class Breakthrough():
+class Breakthrough(): #class that organises and initialises the game
     def __init__(self):
-        self.__Deck = CardCollection("DECK")
+        self.__Deck = CardCollection("DECK") #creates cardcollection objects for deck/hand etc
         self.__Hand = CardCollection("HAND")
         self.__Sequence = CardCollection("SEQUENCE")
         self.__Discard = CardCollection("DISCARD")
         self.__Score = 0
         self.__Locks = []
         self.__GameOver = False
-        self.__CurrentLock = Lock()
+        self.__CurrentLock = Lock() 
         self.__LockSolved = False
         self.__LoadLocks()
     
     def PlayGame(self):
-        if len(self.__Locks) > 0:
+        if len(self.__Locks) > 0: #if there are more than one lock
             self.__SetupGame()
-            while not self.__GameOver:
+            while not self.__GameOver: #while the game isn't over, set LockSolved to False
                 self.__LockSolved = False
-                while not self.__LockSolved and not self.__GameOver:
+                while not self.__LockSolved and not self.__GameOver: #while the lock isn't solved, run game
                     print()
-                    print("Current score:", self.__Score)
+                    print("Current score:", self.__Score) #display score
                     print(self.__CurrentLock.GetLockDetails())
-                    print(self.__Sequence.GetCardDisplay())
+                    print(self.__Sequence.GetCardDisplay()) #display sequence, hand, lock
                     print(self.__Hand.GetCardDisplay())
-                    MenuChoice = self.__GetChoice()
+                    MenuChoice = self.__GetChoice() #ask for decision
                     if MenuChoice == "D":
-                        print(self.__Discard.GetCardDisplay())
+                        print(self.__Discard.GetCardDisplay()) #show discarded cards
                     elif MenuChoice == "U":
-                        CardChoice  = self.__GetCardChoice()
-                        DiscardOrPlay = self.__GetDiscardOrPlayChoice()
+                        CardChoice  = self.__GetCardChoice() #select chosen card
+                        DiscardOrPlay = self.__GetDiscardOrPlayChoice() #ask for decision
                         if DiscardOrPlay == "D":
                             self.__MoveCard(self.__Hand, self.__Discard, self.__Hand.GetCardNumberAt(CardChoice - 1))
                             self.__GetCardFromDeck(CardChoice)
                         elif DiscardOrPlay == "P":
-                            self.__PlayCardToSequence(CardChoice)
+                            self.__PlayCardToSequence(CardChoice) #play card
                     if self.__CurrentLock.GetLockSolved():
                         self.__LockSolved = True
                         self.__ProcessLockSolved()
-                self.__GameOver = self.__CheckIfPlayerHasLost()
+                self.__GameOver = self.__CheckIfPlayerHasLost() #check if game can continue
         else:
             print("No locks in file.")
 
@@ -67,10 +67,10 @@ class Breakthrough():
         else:
             return False
     
-    def __SetupGame(self):
+    def __SetupGame(self): #sets up game
         Choice = input("Enter L to load a game from a file, anything else to play a new game:> ").upper()
         if Choice == "L":
-            if not self.__LoadGame("game1.txt"):
+            if not self.__LoadGame("game1.txt"): #only loads 1 game? checks if game loads correctly
                 self.__GameOver = True
         else:
             self.__CreateStandardDeck()
@@ -214,7 +214,7 @@ class Breakthrough():
         for Count in range(5):
             self.__Deck.AddCard(DifficultyCard())
 
-    def __CreateStandardDeck(self):
+    def __CreateStandardDeck(self): #creates cards and adds to deck
         for Count in range(5):
             NewCard = ToolCard("P", "a")
             self.__Deck.AddCard(NewCard)
@@ -406,7 +406,7 @@ class CardCollection():
     def GetCardDescriptionAt(self, X):
         return self._Cards[X].GetDescription()
 
-    def AddCard(self, C):
+    def AddCard(self, C): #add new card to card list
         self._Cards.append(C)
     
     def GetNumberOfCards(self): 
