@@ -41,7 +41,7 @@ class Breakthrough(): #class that organises and initialises the game
                         CardChoice  = self.__GetCardChoice() #select chosen card
                         DiscardOrPlay = self.__GetDiscardOrPlayChoice() #ask for decision
                         if DiscardOrPlay == "D":
-                            self.__MoveCard(self.__Hand, self.__Discard, self.__Hand.GetCardNumberAt(CardChoice - 1))
+                            self.__MoveCard(self.__Hand, self.__Discard, self.__Hand.GetCardNumberAt(CardChoice - 1)) #move card between collections
                             self.__GetCardFromDeck(CardChoice)
                         elif DiscardOrPlay == "P":
                             self.__PlayCardToSequence(CardChoice) #play card
@@ -52,13 +52,13 @@ class Breakthrough(): #class that organises and initialises the game
         else:
             print("No locks in file.")
 
-    def __ProcessLockSolved(self):
+    def __ProcessLockSolved(self): #set up next lock + reshuffle deck
         self.__Score += 10
-        print("Lock has been solved.  Your score is now:", self.__Score)
+        print("Lock has been solved.  Your score is now:", self.__Score) #display score
         while self.__Discard.GetNumberOfCards() > 0:
-            self.__MoveCard(self.__Discard, self.__Deck, self.__Discard.GetCardNumberAt(0))
-        self.__Deck.Shuffle()
-        self.__CurrentLock = self.__GetRandomLock()
+            self.__MoveCard(self.__Discard, self.__Deck, self.__Discard.GetCardNumberAt(0))#move cards from discard back to deck
+        self.__Deck.Shuffle() #shuffle deck
+        self.__CurrentLock = self.__GetRandomLock() #get a new lock
 
     def __CheckIfPlayerHasLost(self):
         if self.__Deck.GetNumberOfCards() == 0:
@@ -207,10 +207,10 @@ class Breakthrough(): #class that organises and initialises the game
 
     def __GetChoice(self):
         print()
-        Choice = input("(D)iscard inspect, (U)se card:> ").upper()
+        Choice = input("(D)iscard inspect, (U)se card:> ").upper() #gets player choice
         return Choice
     
-    def __AddDifficultyCardsToDeck(self):
+    def __AddDifficultyCardsToDeck(self): #adds difficulty cards to deck
         for Count in range(5):
             self.__Deck.AddCard(DifficultyCard())
 
@@ -236,16 +236,16 @@ class Breakthrough(): #class that organises and initialises the game
             NewCard = ToolCard("K", "c")
             self.__Deck.AddCard(NewCard)
     
-    def __MoveCard(self, FromCollection, ToCollection, CardNumber):
+    def __MoveCard(self, FromCollection, ToCollection, CardNumber): #moves card between collections
         Score  = 0
-        if FromCollection.GetName() == "HAND" and ToCollection.GetName() == "SEQUENCE":
-            CardToMove = FromCollection.RemoveCard(CardNumber)
+        if FromCollection.GetName() == "HAND" and ToCollection.GetName() == "SEQUENCE": #check locations
+            CardToMove = FromCollection.RemoveCard(CardNumber) #remove card from one
             if CardToMove is not None:
-                ToCollection.AddCard(CardToMove)
-                Score = CardToMove.GetScore()
+                ToCollection.AddCard(CardToMove) #add card to another
+                Score = CardToMove.GetScore() #get new score
         else:
             CardToMove = FromCollection.RemoveCard(CardNumber)
-            if CardToMove is not None:
+            if CardToMove is not None: #remove card from one, add to another
                 ToCollection.AddCard(CardToMove)
         return Score
 
