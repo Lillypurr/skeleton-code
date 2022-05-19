@@ -81,7 +81,7 @@ class Breakthrough(): #class that organises and initialises the game
             self.__Deck.Shuffle() #add difficulty cards and reshuffle
             self.__CurrentLock = self.__GetRandomLock()
     
-    def __PlayCardToSequence(self, CardChoice):
+    def __PlayCardToSequence(self, CardChoice): #adds selected card to sequence, and increments score; also displays message if lock completed
         if self.__Sequence.GetNumberOfCards() > 0:
             if self.__Hand.GetCardDescriptionAt(CardChoice - 1)[0] != self.__Sequence.GetCardDescriptionAt(self.__Sequence.GetNumberOfCards() - 1)[0]:
                 self.__Score += self.__MoveCard(self.__Hand, self.__Sequence, self.__Hand.GetCardNumberAt(CardChoice - 1)) #move card and add card score to Score
@@ -95,7 +95,7 @@ class Breakthrough(): #class that organises and initialises the game
             print()
             self.__Score += 5
 
-    def __CheckIfLockChallengeMet(self):
+    def __CheckIfLockChallengeMet(self): #checks if challenge met, returns true if met, displays challenge if not
         SequenceAsString = ""
         for Count in range(self.__Sequence.GetNumberOfCards() - 1, max(0, self.__Sequence.GetNumberOfCards() - 3) -1, -1):
             if len(SequenceAsString) > 0:
@@ -168,7 +168,7 @@ class Breakthrough(): #class that organises and initialises the game
         except:
             print("File not loaded")
         
-    def __GetRandomLock(self):
+    def __GetRandomLock(self): #select a random lock
         return self.__Locks[random.randint(0, len(self.__Locks) - 1)]
 
     def __GetCardFromDeck(self, CardChoice):
