@@ -38,13 +38,13 @@ class Breakthrough(): #class that organises and initialises the game
                     if MenuChoice == "D":
                         print(self.__Discard.GetCardDisplay()) #show discarded cards
                     elif MenuChoice == "U":
-                        CardChoice  = self.__GetCardChoice() #select chosen card
+                        CardChoice  = self.__GetCardChoice() #select chosen card (integer)
                         DiscardOrPlay = self.__GetDiscardOrPlayChoice() #ask for decision
                         if DiscardOrPlay == "D":
                             self.__MoveCard(self.__Hand, self.__Discard, self.__Hand.GetCardNumberAt(CardChoice - 1)) #move card between collections
                             self.__GetCardFromDeck(CardChoice)
                         elif DiscardOrPlay == "P":
-                            self.__PlayCardToSequence(CardChoice) #play card
+                            self.__PlayCardToSequence(CardChoice) #play card 
                     if self.__CurrentLock.GetLockSolved():
                         self.__LockSolved = True
                         self.__ProcessLockSolved()
@@ -83,7 +83,7 @@ class Breakthrough(): #class that organises and initialises the game
     
     def __PlayCardToSequence(self, CardChoice): #adds selected card to sequence, and increments score; also displays message if lock completed
         if self.__Sequence.GetNumberOfCards() > 0:
-            if self.__Hand.GetCardDescriptionAt(CardChoice - 1)[0] != self.__Sequence.GetCardDescriptionAt(self.__Sequence.GetNumberOfCards() - 1)[0]:
+            if self.__Hand.GetCardDescriptionAt(CardChoice - 1)[0] != self.__Sequence.GetCardDescriptionAt(self.__Sequence.GetNumberOfCards() - 1)[0]:#check descriptions via integer location
                 self.__Score += self.__MoveCard(self.__Hand, self.__Sequence, self.__Hand.GetCardNumberAt(CardChoice - 1)) #move card and add card score to Score
                 self.__GetCardFromDeck(CardChoice)
         else:
