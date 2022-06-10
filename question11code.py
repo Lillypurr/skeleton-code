@@ -22,9 +22,9 @@ class Breakthrough(): #class that organises and initialises the game
         self.__CurrentLock = Lock() 
         self.__LockSolved = False
         self.__LoadLocks()
+        self.__Credits = 10
     
     def PlayGame(self):
-        Counter = 0
         if len(self.__Locks) > 0: #if there are more than one lock
             self.__SetupGame()
             while not self.__GameOver: #while the game isn't over, set LockSolved to False
@@ -37,10 +37,7 @@ class Breakthrough(): #class that organises and initialises the game
                     print(self.__Hand.GetCardDisplay())
                     MenuChoice = self.__GetChoice() #ask for decision
                     if MenuChoice == "D":
-                        self.__MoveCard(self.__Hand, self.__Discard, self.__Hand.GetCardNumberAt(0))
-                        CardChoice = 0
-                        self.__GetCardFromDeck(CardChoice)
-                        #print(self.__Discard.GetCardDisplay()) #show discarded cards
+                        print(self.__Discard.GetCardDisplay()) #show discarded cards
                     elif MenuChoice == "U":
                         CardChoice  = self.__GetCardChoice() #select chosen card (integer)
                         DiscardOrPlay = self.__GetDiscardOrPlayChoice() #ask for decision
@@ -49,16 +46,21 @@ class Breakthrough(): #class that organises and initialises the game
                             self.__GetCardFromDeck(CardChoice)
                         elif DiscardOrPlay == "P":
                             self.__PlayCardToSequence(CardChoice) #play card
-                        Counter += 1
+                        if self.__Credits >= 2:
+                            ShopChoice = input("Buy a tool? (y/n):>").lower()
+                            if ShopChoice == "y":
+                                Keys = False
+                                if self.__Credits >= 3:
+                                    Keys = True
+                                Tools = self.__Deck.PrintToolsAvailable(Keys)
+                                #print(Tools)
+                                #for Count in range(len(Tools)):
+                                    #if Tools[Count] != -1:
+                                        #print(str(Count+1)+ ". "
+                                
                     if self.__CurrentLock.GetLockSolved():
                         self.__LockSolved = True
                         self.__ProcessLockSolved()
-                        BonusScore = 20 - Counter
-                        if BonusScore <= 0:
-                            BonusScore = 0
-                        print("You got " + str(BonusScore) + " bonus points.")
-                        self.__Score += BonusScore
-                        Counter = 0
                 self.__GameOver = self.__CheckIfPlayerHasLost() #check if game can continue
         else:
             print("No locks in file.")
@@ -68,7 +70,6 @@ class Breakthrough(): #class that organises and initialises the game
         print("Lock has been solved.  Your score is now:", self.__Score) #display score
         while self.__Discard.GetNumberOfCards() > 0:
             self.__MoveCard(self.__Discard, self.__Deck, self.__Discard.GetCardNumberAt(0))#move cards from discard back to deck
-        self.__AddGeniusCardToDeck()
         self.__Deck.Shuffle() #shuffle deck
         self.__CurrentLock = self.__GetRandomLock() #get a new lock
 
@@ -89,8 +90,7 @@ class Breakthrough(): #class that organises and initialises the game
             self.__Deck.Shuffle()
             for Count in range(5):
                 self.__MoveCard(self.__Deck, self.__Hand, self.__Deck.GetCardNumberAt(0))#move 5 deck cards to hand
-            self.__AddDifficultyCardsToDeck()
-            self.__AddGeniusCardToDeck()
+            self.__AddDifficultyCardsToDeck() 
             self.__Deck.Shuffle() #add difficulty cards and reshuffle
             self.__CurrentLock = self.__GetRandomLock()
     
@@ -196,28 +196,10 @@ class Breakthrough(): #class that organises and initialises the game
                 print()
                 self.__Discard.AddCard(CurrentCard)
                 CurrentCard.Process(self.__Deck, self.__Discard, self.__Hand, self.__Sequence, self.__CurrentLock, Choice, CardChoice)
-
-            elif self.__Deck.GetCardDescriptionAt(0) == "Gen":
-                CurrentCard = self.__Deck.RemoveCard(self.__Deck.GetCardNumberAt(0))
-                print()
-                print("Genius card encountered!")
-                Choice = input("You can (U)se this card to solve one challenge or (D)iscard it:>").upper()
-                if Choice == "D":
-                    self.__Discard.AddCard(CurrentCard)
-                #elif Choice == "U":
-                    #print(self.__CurrentLock.GetNumberOfChallenges())
-                    #print(self.__CurrentLock._Challenges[0].GetCondition())
-                    #ChalChoice = input("
-                    
-                
         while self.__Hand.GetNumberOfCards() < 5 and self.__Deck.GetNumberOfCards() > 0:
             if self.__Deck.GetCardDescriptionAt(0) == "Dif":
                 self.__MoveCard(self.__Deck, self.__Discard, self.__Deck.GetCardNumberAt(0))
                 print("A difficulty card was discarded from the deck when refilling the hand.")
-            elif self.__Deck.GetCardDescriptionAt(0) == "Gen":
-                self.__MoveCard(self.__Deck, self.__Discard, self.__Deck.GetCardNumberAt(0))
-                print("A genius card was discarded from the deck when refilling the hand.")
-                
             else:
                 self.__MoveCard(self.__Deck, self.__Hand, self.__Deck.GetCardNumberAt(0))
         if self.__Deck.GetNumberOfCards() == 0 and self.__Hand.GetNumberOfCards() < 5:
@@ -244,12 +226,6 @@ class Breakthrough(): #class that organises and initialises the game
     def __AddDifficultyCardsToDeck(self): #adds difficulty cards to deck
         for Count in range(5):
             self.__Deck.AddCard(DifficultyCard())
-
-    
-    def __AddGeniusCardToDeck(self):
-        #GeniusChance = random.randint(1,4)
-        #if GeniusChance == 1:
-        self.__Deck.AddCard(GeniusCard())
 
     def __CreateStandardDeck(self): #creates cards and adds to deck
         for Count in range(5):
@@ -429,14 +405,6 @@ class DifficultyCard(Card):
             Discard.AddCard(CardToMove)
             Count += 1
 
-class GeniusCard(Card):
-    def __init__(self):
-        self._CardType = "Gen"
-        super(GeniusCard, self).__init__()
-
-    def GetDescription(self):
-        return self._CardType
-
 class CardCollection():
     def __init__(self, N):
         self._Name = N
@@ -511,5 +479,35 @@ class CardCollection():
             CardDisplay += LineOfDashes + "\n"
         return CardDisplay
 
+    def PrintToolsAvailable(self, KeysAvailable):
+        ToolsFound = {}
+        for Count in range(self.GetNumberOfCards()):
+            Num = self.GetCardNumberAt(Count)
+            Desc = self.GetCardDescriptionAt(Count)
+            if Desc != "Dif":
+                if ToolsFound.get(Desc) == None:
+                    if "K" not in Desc:
+                        ToolsFound[Desc] = Num
+                    elif KeysAvailable == True and "K" in Desc:
+                        ToolsFound[Desc] = Num
+                
+                    
+        #print(ToolsFound)
+        ToolList = []
+        for Count in range(9):
+            ToolList.append(-1)
+        TypeList = ["F","P","K"]
+        KitList = ["a","b","c"]
+
+        ToolNum = 0
+        for i in range(len(TypeList)):
+            for k in range(len(KitList)):
+                for Tool in ToolsFound:
+                    if TypeList[i] in Tool and KitList[k] in Tool:
+                        ToolList[ToolNum] = ToolsFound[Tool] 
+                ToolNum += 1
+        return ToolList
+        #print(ToolList)
+        
 if __name__ == "__main__":
     Main()
